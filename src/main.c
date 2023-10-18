@@ -201,7 +201,7 @@ double PLANT_realize(int i){
     plant.plant_out1 = system_state.q;
     plant.plant_out2 = system_state.dq;
     plant.plant_out3 = dynamics.C_norm;
-    archive.C_norm_archive[i] = dynamics.C_norm;
+    archive.C_norm_archive[i] = plant.plant_out3;
 }
 
 double CONTROL_realize(int i){
@@ -212,17 +212,17 @@ double CONTROL_realize(int i){
     controller.controller_u4 = system_state.q;
     controller.controller_u5 = system_state.dq;
     // printf("system_state.dq = %f\n", system_state.dq);
-    archive.q_archive[i] = system_state.q;
-    archive.dq_archive[i] = system_state.dq;
+    archive.q_archive[i] = controller.controller_u4;
+    archive.dq_archive[i] = controller.controller_u5;
 
     for (int j = 0; j < H; j++) {
-        phi_D[j] = exp(-pow(system_state.q - c_D[j], 2) / (b * b));  // output of the inertia matrix RBF function
+        phi_D[j] = exp(-pow(controller.controller_u4 - c_D[j], 2) / (b * b));  // output of the inertia matrix RBF function
     }
     for (int j = 0; j < H; j++) {
-        phi_G[j] = exp(-pow(system_state.q - c_G[j], 2) / (b * b));  // output of the gravity matrix RBF function
+        phi_G[j] = exp(-pow(controller.controller_u4 - c_G[j], 2) / (b * b));  // output of the gravity matrix RBF function
     }
     for (int j = 0; j < H; j++) {
-        phi_C[j] = exp((-pow(system_state.q - c_C[0][j], 2) - pow(system_state.dq - c_C[1][j], 2))/ (b * b));  // output of the Coriolis matrix RBF function
+        phi_C[j] = exp((-pow(controller.controller_u4 - c_C[0][j], 2) - pow(controller.controller_u5 - c_C[1][j], 2))/ (b * b));  // output of the Coriolis matrix RBF function
         // printf("phi_C[%d] = %f\n", j, phi_C[j]);
     }
 
@@ -232,9 +232,9 @@ double CONTROL_realize(int i){
         weight_C[j] = 0.3;  // Coriolis matrix RBF network weight
     }
 
-    controller.err = qd.y[i] - system_state.q;
+    controller.err = qd.y[i] - controller.controller_u4;
     archive.error_archive[i] = controller.err;
-    controller.err_velocity = dqd.y[i] - system_state.dq;
+    controller.err_velocity = dqd.y[i] - controller.controller_u5;
     // printf("controller.err_velocity = %f\n", controller.err_velocity);
     archive.error_velocity_archive[i] = controller.err_velocity;
     controller.r = controller.err_velocity + controller.Lambda * controller.err;
@@ -288,7 +288,7 @@ double CONTROL_realize(int i){
     archive.tol_archive[i] = torque.tol;
     controller.controller_out1 = torque.tol;
     controller.controller_out2 = dynamics.C_estimate_norm;
-    archive.C_estimate_norm_archive[i] = dynamics.C_estimate_norm;
+    archive.C_estimate_norm_archive[i] = controller.controller_out2;
 }
 
 int main(){
