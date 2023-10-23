@@ -11,7 +11,7 @@
 // global variables declaration
 #define PI 3.14159
 #define H 5  // hidden layer neurons number
-#define ARRAY_SIZE  6000  // hidden layer neurons number
+#define ARRAY_SIZE  6000  // sampling times
 
 static double Ts = 0.005; // sampling period
 static double t0 = 0.0; // start time
@@ -19,7 +19,7 @@ static double t1 = 30.0; // end time
 static double c_D[5] = {-1.0, -0.5, 0.0, 0.5, 1.0};  // inertia matrix RBF function center
 static double c_G[5] = {-1.0, -0.5, 0.0, 0.5, 1.0};  // gravity matrix RBF function center
 static double c_C[2][5] = {{-1.0, -0.5, 0.0, 0.5, 1.0}, {-2.0, -1.0, 0.0, 1.0, 2.0}};  // Coriolis matrix RBF function center
-static double b = 1.5;    // RBF function center width
+static double b = 1.5;    // RBF function width
 static double m = 0.020;  // manipulator mass
 static double g = 9.8;    // gravitational acceleration
 static double l = 0.05;   // connecting rod length
